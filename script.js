@@ -84,21 +84,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (checkbox.checked) {
                 selectedValues.push(fieldValue);
-
-                // Check if the "Case Owner" checkbox is checked and update ownerInput
-                if (index === caseOwnerIndex) {
-                    ownerInput.value = caseOwnerValue;
-                    ownerInput.disabled = true;
-                }
             }
         });
-
-        // If the "Case Owner" checkbox is not checked, make owner input editable and default it to "Non"
-        if (caseOwnerIndex !== -1 && !selectedValues.includes(caseOwnerValue)) {
-            ownerInput.value = ownerInput.value;
-            ownerInput.disabled = false;  // Allow editing when "Case Owner" is not checked
-        }
-
+        
         // Construct the output string
         let outputString = `<a href="${urlInput.value}">${caseNumber}</a> | `;
         outputString += selectedValues.join(' | ');
