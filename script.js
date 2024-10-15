@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // If the "Case Owner" checkbox is not checked, make owner input editable and default it to "Non"
         if (caseOwnerIndex !== -1 && !selectedValues.includes(caseOwnerValue)) {
-            ownerInput.value = ownerInput.value || "Non";
+            ownerInput.value = ownerInput.value;
             ownerInput.disabled = false;  // Allow editing when "Case Owner" is not checked
         }
 
