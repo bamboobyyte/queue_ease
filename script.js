@@ -54,26 +54,62 @@ document.addEventListener('DOMContentLoaded', function () {
         const caseInfo = caseInfoInput.value.trim().split("\n");
         if (caseInfo.length < 2) return;
 
-        const values = caseInfo[1].split("\t");
-        const caseNumber = values[0];
+        const headers = caseInfo[0].split("\t");  // First line (headers)
+        const values = caseInfo[1].split("\t");   // Second line (values)
+
+        // Find the index of "Case Number"
+        const caseNumberIndex = headers.indexOf("Case Number");
+        let caseNumber = "";
+
+        if (caseNumberIndex !== -1) {
+            caseNumber = values[caseNumberIndex];  // Get the case number value
+        } else {
+            console.error("Case Number not found in headers");
+        }
+
+        // Find the index of "Case Owner"
+        const caseOwnerIndex = headers.indexOf("Case Owner");
+        let caseOwnerValue = "";
+
+        if (caseOwnerIndex !== -1) {
+            caseOwnerValue = values[caseOwnerIndex];  // Get the "Case Owner" value
+        }
+
         const selectedValues = [];
 
+        // Collect selected values from checkboxes
         caseTableBody.querySelectorAll('tr').forEach((row, index) => {
             const checkbox = row.querySelector('input[type="checkbox"]');
+            const fieldValue = values[index];
+
             if (checkbox.checked) {
-                selectedValues.push(values[index]);
+                selectedValues.push(fieldValue);
+
+                // Check if the "Case Owner" checkbox is checked and update ownerInput
+                if (index === caseOwnerIndex) {
+                    ownerInput.value = caseOwnerValue;
+                    ownerInput.disabled = true;
+                }
             }
         });
+
+        // If the "Case Owner" checkbox is not checked, make owner input editable and default it to "Non"
+        if (caseOwnerIndex !== -1 && !selectedValues.includes(caseOwnerValue)) {
+            ownerInput.value = ownerInput.value || "Non";
+            ownerInput.disabled = false;  // Allow editing when "Case Owner" is not checked
+        }
 
         // Construct the output string
         let outputString = `<a href="${urlInput.value}">${caseNumber}</a> | `;
         outputString += selectedValues.join(' | ');
 
-        // Handle SLA tag and owner styling
+        // Handle SLA tag styling
         const slaTag = selectedValues.find(val => ['A', 'B', 'C'].includes(val));
         if (slaTag === 'A') {
             outputString = outputString.replace(slaTag, `<span style="color: red;">${slaTag}</span>`);
         }
+
+        // Only make the case owner bold
         if (ownerInput.value) {
             outputString += ` | <strong>${ownerInput.value}</strong>`;
         }
@@ -81,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
         output.innerHTML = outputString;
     }
 
-    // Event listeners
+    // Ensure the output regenerates dynamically and when the user manually changes input
     caseInfoInput.addEventListener('input', parseCaseInfo);
     regenerateBtn.addEventListener('click', generateOutput);
 
